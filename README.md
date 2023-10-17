@@ -110,3 +110,9 @@ Configuring the keyspaces for Multi-DC
 
   select * from tracking.tracking_data;
 ```
+
+### Importing the MMS keyspaces and data automatically
+
+```
+docker exec scylla-node1 cqlsh -f /mutant-data.txt
+```
