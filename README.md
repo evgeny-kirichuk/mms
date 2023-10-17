@@ -116,3 +116,19 @@ Configuring the keyspaces for Multi-DC
 ```
 docker exec scylla-node1 cqlsh -f /mutant-data.txt
 ```
+
+
+## Development Notes
+[how to get all keyspaces](https://stackoverflow.com/questions/18712967/how-to-list-all-the-available-keyspaces-in-cassandra):
+```
+SELECT * FROM system_schema.keyspaces;
+```
+or
+```
+DESCRIBE keyspaces;
+```
+---
+[how to get all tables in keyspace](https://github.com/gocql/gocql/issues/193#issuecomment-473714574)
+
+---
+[run docker go development environment](https://levelup.gitconnected.com/setup-simple-go-development-environment-with-docker-b8b9c0d4e0a8)
