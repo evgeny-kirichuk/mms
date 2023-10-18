@@ -123,12 +123,21 @@ docker exec scylla-node1 cqlsh -f /mutant-data.txt
 ```
 SELECT * FROM system_schema.keyspaces;
 ```
-or
+response example:
 ```
-DESCRIBE keyspaces;
+cqlsh:system_schema> SELECT * FROM system_schema.keyspaces;
+keyspace_name| durable_writes | replication
+-------------+----------------+--------------------------------
+I2Tutorials  | True           | {'class': 'org.apache.cassandra.locator.SimpleStrategy', 'replication_factor':'3'}
 ```
+[system keyspace doc](https://docs.datastax.com/en/dse/5.1/cql/cql/cql_using/useQuerySystem.html)
+
+[gocql doc](https://pkg.go.dev/github.com/gocql/gocql)
+
 ---
 [how to get all tables in keyspace](https://github.com/gocql/gocql/issues/193#issuecomment-473714574)
+
+[TableMetadata doc](https://pkg.go.dev/github.com/gocql/gocql#TableMetadata)
 
 ---
 [run docker go development environment](https://levelup.gitconnected.com/setup-simple-go-development-environment-with-docker-b8b9c0d4e0a8)
