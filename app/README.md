@@ -5,7 +5,7 @@
 ```
 cd mms/go/
 docker build -t go-app .
-docker run -d --net=mms_web --name some-go-app go-app
+docker run -d -p 5500:5500 --net=mms_web --name some-go-app go-app
 docker exec -it some-go-app sh
 ./goapp
 ```
