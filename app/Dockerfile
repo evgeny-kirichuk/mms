@@ -1,13 +1,31 @@
-# Build the manager binary
-FROM golang:1.13 as builder
+# # Compile stage
+# FROM golang:1.17 AS build-env
+# ADD . /dockerdev
+# WORKDIR /dockerdev
+# RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /server ./cmd/goapp
 
-COPY . /build
-WORKDIR /build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /build/goapp ./cmd/goapp
+# # Final stage
+# FROM debian:buster
+# EXPOSE 8000
+# WORKDIR /
+# COPY --from=build-env /server /
+# CMD ["/server"]
 
-FROM alpine:3.10
+FROM golang:1.18
 
-COPY --from=builder /build/goapp /usr/local/bin/goapp
-RUN chmod +x /usr/local/bin/goapp
+# Copy application data into image
+COPY . /go/src/app
+WORKDIR /go/src/app
 
-CMD tail -f /dev/null
+# COPY go.mod ./
+# COPY go.sum ./
+RUN go mod download
+
+# Copy only `.go` files, if you want all files to be copied then replace `with `COPY . .` for the code below.
+# COPY . .
+
+# Install our third-party application for hot-reloading capability.
+RUN ["go", "get", "github.com/githubnemo/CompileDaemon"]
+RUN ["go", "install", "github.com/githubnemo/CompileDaemon"]
+
+ENTRYPOINT CompileDaemon -polling -log-prefix=false -build="go build ." -command="./app" -directory="./"

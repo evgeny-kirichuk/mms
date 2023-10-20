@@ -2,27 +2,21 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
-	"os"
 
-	"github.com/gocql/gocql"
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
-	"go.uber.org/zap"
 )
 
-func goDotEnvVariable(key string) string {
+// func goDotEnvVariable(key string) string {
 
-  // load .env file
-  err := godotenv.Load(".env")
+//   // load .env file
+//   err := godotenv.Load(".env")
 
-  if err != nil {
-    log.Fatalf("Error loading .env file")
-  }
+//   if err != nil {
+//     log.Fatalf("Error loading .env file")
+//   }
 
-  return os.Getenv(key)
-}
+//   return os.Getenv(key)
+// }
 
 var config = fiber.Config{
 	ErrorHandler: func(c *fiber.Ctx, err error) error {
@@ -32,9 +26,9 @@ var config = fiber.Config{
 
 
 func main() {
-	port := goDotEnvVariable("PORT")
-	fmt.Println("port", port)
-	addr := flag.String("addr", ":" + string(port), "http service address")
+	// port := goDotEnvVariable("PORT")
+	// fmt.Println("port", port)
+	addr := flag.String("addr", ":8000", "http service address")
 	flag.Parse()
 
 	// logger := log.CreateLogger("info")
@@ -61,16 +55,16 @@ func main() {
 	// scylla.SelectQuery(session, logger)
 }
 
-func insertQuery(session *gocql.Session, logger *zap.Logger) {
-	logger.Info("Inserting Mike")
-	if err := session.Query("INSERT INTO mutant_data (first_name,last_name,address,picture_location) VALUES ('Mike','Tyson','1515 Main St', 'http://www.facebook.com/mtyson')").Exec(); err != nil {
-		logger.Error("insert catalog.mutant_data", zap.Error(err))
-	}
-}
+// func insertQuery(session *gocql.Session, logger *zap.Logger) {
+// 	logger.Info("Inserting Mike")
+// 	if err := session.Query("INSERT INTO mutant_data (first_name,last_name,address,picture_location) VALUES ('Mike','Tyson','1515 Main St', 'http://www.facebook.com/mtyson')").Exec(); err != nil {
+// 		logger.Error("insert catalog.mutant_data", zap.Error(err))
+// 	}
+// }
 
-func deleteQuery(session *gocql.Session, logger *zap.Logger) {
-	logger.Info("Deleting Mike")
-	if err := session.Query("DELETE FROM mutant_data WHERE first_name = 'Mike' and last_name = 'Tyson'").Exec(); err != nil {
-		logger.Error("delete catalog.mutant_data", zap.Error(err))
-	}
-}
+// func deleteQuery(session *gocql.Session, logger *zap.Logger) {
+// 	logger.Info("Deleting Mike")
+// 	if err := session.Query("DELETE FROM mutant_data WHERE first_name = 'Mike' and last_name = 'Tyson'").Exec(); err != nil {
+// 		logger.Error("delete catalog.mutant_data", zap.Error(err))
+// 	}
+// }
