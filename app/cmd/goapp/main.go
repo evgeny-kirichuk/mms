@@ -2,13 +2,27 @@ package main
 
 import (
 	"flag"
-	"goapp/internal/log"
-	"goapp/internal/scylla"
+	"fmt"
+	"log"
+	"os"
 
 	"github.com/gocql/gocql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
+
+func goDotEnvVariable(key string) string {
+
+  // load .env file
+  err := godotenv.Load(".env")
+
+  if err != nil {
+    log.Fatalf("Error loading .env file")
+  }
+
+  return os.Getenv(key)
+}
 
 var config = fiber.Config{
 	ErrorHandler: func(c *fiber.Ctx, err error) error {
@@ -18,17 +32,19 @@ var config = fiber.Config{
 
 
 func main() {
-	addr := flag.String("addr", ":3000", "http service address")
+	port := goDotEnvVariable("PORT")
+	fmt.Println("port", port)
+	addr := flag.String("addr", ":" + string(port), "http service address")
 	flag.Parse()
 
-	logger := log.CreateLogger("info")
+	// logger := log.CreateLogger("info")
 
-	cluster := scylla.CreateCluster(gocql.Quorum, "catalog", "scylla-node1", "scylla-node2", "scylla-node3")
-	session, err := gocql.NewSession(*cluster)
-	if err != nil {
-		logger.Fatal("unable to connect to scylla", zap.Error(err))
-	}
-	defer session.Close()
+	// cluster := scylla.CreateCluster(gocql.Quorum, "catalog", "scylla-node1", "scylla-node2", "scylla-node3")
+	// session, err := gocql.NewSession(*cluster)
+	// if err != nil {
+	// 	logger.Fatal("unable to connect to scylla", zap.Error(err))
+	// }
+	// defer session.Close()
 
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
