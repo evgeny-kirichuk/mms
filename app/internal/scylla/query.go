@@ -25,8 +25,8 @@ func SelectQuery(session *gocql.Session, logger *zap.Logger) map[string]string {
 }
 
 func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
-	Tables    map[string]string
-	Keyspaces map[string]string
+	Tables    map[string]string `json:"tables"`
+	Keyspaces map[string]string `json:"keyspaces"`
 } {
 	logger.Info("Displaying Results:")
 	tablesQuery := session.Query("SELECT table_name FROM system_schema.tables")
@@ -37,8 +37,8 @@ func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
 	tables := tablesQuery.Iter()
 	keyspaces := keyspacesQuery.Iter()
 	res := struct {
-		Tables    map[string]string
-		Keyspaces map[string]string
+		Tables    map[string]string `json:"tables"`
+		Keyspaces map[string]string `json:"keyspaces"`
 	}{}
 
 	res.Tables = map[string]string{}
