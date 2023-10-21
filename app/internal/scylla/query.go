@@ -24,20 +24,42 @@ func SelectQuery(session *gocql.Session, logger *zap.Logger) map[string]string {
 	return res
 }
 
-func SelectTables(session *gocql.Session, logger *zap.Logger) map[string]string {
+func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
+	Tables    map[string]string
+	Keyspaces map[string]string
+} {
 	logger.Info("Displaying Results:")
-	q := session.Query("SELECT table_name FROM system_schema.tables WHERE keyspace_name='catalog'")
+	tablesQuery := session.Query("SELECT table_name FROM system_schema.tables")
+	keyspacesQuery := session.Query("SELECT * FROM system_schema.keyspaces")
 	var tableName string
-	it := q.Iter()
-	res := make(map[string]string)
+	var keyspaceName string
+
+	tables := tablesQuery.Iter()
+	keyspaces := keyspacesQuery.Iter()
+	res := struct {
+		Tables    map[string]string
+		Keyspaces map[string]string
+	}{}
+
+	res.Tables = map[string]string{}
+	res.Keyspaces = map[string]string{}
+
 	defer func() {
-		if err := it.Close(); err != nil {
+		if err := tables.Close(); err != nil {
+			logger.Warn("select catalog.mutant", zap.Error(err))
+		}
+		if err := keyspaces.Close(); err != nil {
 			logger.Warn("select catalog.mutant", zap.Error(err))
 		}
 	}()
-	for it.Scan(&tableName) {
-		logger.Info("\t" + tableName)
-		res[tableName] = tableName
+
+	for tables.Scan(&tableName) {
+		logger.Info("\t" + "table: " + tableName)
+		res.Tables[tableName] = tableName
+	}
+	for keyspaces.Scan(&keyspaceName, nil, nil) {
+		logger.Info("\t" + "keyspace: " + keyspaceName)
+		res.Keyspaces[keyspaceName] = keyspaceName
 	}
 
 	return res
