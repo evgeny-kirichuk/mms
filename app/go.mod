@@ -7,7 +7,6 @@ require (
 	github.com/gocql/gocql v0.0.0-20191106222750-ae2f7fc85f32
 	github.com/gofiber/fiber/v2 v2.50.0
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.8.4 // indirect
 	go.uber.org/zap v1.13.0
 )
