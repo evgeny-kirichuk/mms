@@ -26,30 +26,17 @@ func SelectQuery(session *gocql.Session, logger *zap.Logger) map[string]string {
 	return res
 }
 
-func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
-	Tables    map[string]map[string]interface{} `json:"tables"`
-	Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
-} {
+func SelectTables(session *gocql.Session, logger *zap.Logger) map[string]map[string]interface{} {
 	logger.Info("Displaying Results:")
 	tablesIt := session.Query("SELECT * FROM system_schema.tables").Iter()
-	keyspacesIt := session.Query("SELECT * FROM system_schema.keyspaces").Iter()
-
-	res := struct {
-		Tables    map[string]map[string]interface{} `json:"tables"`
-		Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
-	}{}
 
 	defer func() {
 		if err := tablesIt.Close(); err != nil {
 			logger.Warn("select catalog.mutant", zap.Error(err))
 		}
-		if err := keyspacesIt.Close(); err != nil {
-			logger.Warn("select catalog.mutant", zap.Error(err))
-		}
 	}()
 
 	tablesValues := map[string]map[string]interface{}{}
-	keyspacesValues := map[string]map[string]interface{}{}
 
 	for {
 		// New map each iteration
@@ -63,6 +50,22 @@ func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
 		}
 	}
 
+	return tablesValues
+}
+
+func SelectKeyspaces(session *gocql.Session, logger *zap.Logger) map[string]map[string]interface{} {
+	logger.Info("Displaying Results:")
+
+	keyspacesIt := session.Query("SELECT * FROM system_schema.keyspaces").Iter()
+
+	defer func() {
+		if err := keyspacesIt.Close(); err != nil {
+			logger.Warn("select catalog.mutant", zap.Error(err))
+		}
+	}()
+
+	keyspacesValues := map[string]map[string]interface{}{}
+
 	for {
 		// New map each iteration
 		row := make(map[string]interface{})
@@ -75,8 +78,5 @@ func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
 		}
 	}
 
-	res.Tables = tablesValues
-	res.Keyspaces = keyspacesValues
-
-	return res
+	return keyspacesValues
 }

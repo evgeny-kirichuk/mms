@@ -57,15 +57,12 @@ func main() {
 
 	apiv1.Get("/tables", func(c *fiber.Ctx) error {
 		res := scylla.SelectTables(session, logger)
+		return c.JSON(res)
+	})
 
-		temp := struct {
-			Tables    map[string]map[string]interface{} `json:"tables"`
-			Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
-		}{
-			Tables:    res.Tables,
-			Keyspaces: res.Keyspaces,
-		}
-		return c.JSON(temp)
+	apiv1.Get("/keyspaces", func(c *fiber.Ctx) error {
+		res := scylla.SelectKeyspaces(session, logger)
+		return c.JSON(res)
 	})
 
 	app.Listen(*addr)
