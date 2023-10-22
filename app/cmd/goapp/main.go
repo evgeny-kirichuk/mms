@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"goapp/internal/log"
 	"goapp/internal/scylla"
 
@@ -32,6 +31,7 @@ var config = fiber.Config{
 func main() {
 	// port := goDotEnvVariable("PORT")
 	// fmt.Println("port", port)
+
 	addr := flag.String("addr", ":8000", "http service address")
 	flag.Parse()
 
@@ -47,7 +47,7 @@ func main() {
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
 	apiv1.Get("/user", func(c *fiber.Ctx) error {
-		return c.JSON(map[string]string{"message": "Hello World"})
+		return c.JSON(map[string]string{"message": "Hello World!!!"})
 	})
 
 	apiv1.Get("/select", func(c *fiber.Ctx) error {
@@ -57,7 +57,7 @@ func main() {
 
 	apiv1.Get("/tables", func(c *fiber.Ctx) error {
 		res := scylla.SelectTables(session, logger)
-		fmt.Println("res: ", res)
+
 		temp := struct {
 			Tables    map[string]map[string]interface{} `json:"tables"`
 			Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
