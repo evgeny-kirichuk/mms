@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"goapp/internal/log"
 	"goapp/internal/scylla"
 
@@ -56,11 +57,15 @@ func main() {
 
 	apiv1.Get("/tables", func(c *fiber.Ctx) error {
 		res := scylla.SelectTables(session, logger)
-		// temp := map[string]map[string]string{
-		// 	"tables":    res.Tables,
-		// 	"keyspaces": res.Keyspaces,
-		// }
-		return c.JSON(res)
+		fmt.Println("res: ", res)
+		temp := struct {
+			Tables    map[string]map[string]interface{} `json:"tables"`
+			Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
+		}{
+			Tables:    res.Tables,
+			Keyspaces: res.Keyspaces,
+		}
+		return c.JSON(temp)
 	})
 
 	app.Listen(*addr)

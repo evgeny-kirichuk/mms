@@ -1,6 +1,8 @@
 package scylla
 
 import (
+	"fmt"
+
 	"github.com/gocql/gocql"
 	"go.uber.org/zap"
 )
@@ -25,42 +27,56 @@ func SelectQuery(session *gocql.Session, logger *zap.Logger) map[string]string {
 }
 
 func SelectTables(session *gocql.Session, logger *zap.Logger) struct {
-	Tables    map[string]string `json:"tables"`
-	Keyspaces map[string]string `json:"keyspaces"`
+	Tables    map[string]map[string]interface{} `json:"tables"`
+	Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
 } {
 	logger.Info("Displaying Results:")
-	tablesQuery := session.Query("SELECT table_name FROM system_schema.tables")
-	keyspacesQuery := session.Query("SELECT * FROM system_schema.keyspaces")
-	var tableName string
-	var keyspaceName string
+	tablesIt := session.Query("SELECT * FROM system_schema.tables").Iter()
+	keyspacesIt := session.Query("SELECT * FROM system_schema.keyspaces").Iter()
 
-	tables := tablesQuery.Iter()
-	keyspaces := keyspacesQuery.Iter()
 	res := struct {
-		Tables    map[string]string `json:"tables"`
-		Keyspaces map[string]string `json:"keyspaces"`
+		Tables    map[string]map[string]interface{} `json:"tables"`
+		Keyspaces map[string]map[string]interface{} `json:"keyspaces"`
 	}{}
 
-	res.Tables = map[string]string{}
-	res.Keyspaces = map[string]string{}
-
 	defer func() {
-		if err := tables.Close(); err != nil {
+		if err := tablesIt.Close(); err != nil {
 			logger.Warn("select catalog.mutant", zap.Error(err))
 		}
-		if err := keyspaces.Close(); err != nil {
+		if err := keyspacesIt.Close(); err != nil {
 			logger.Warn("select catalog.mutant", zap.Error(err))
 		}
 	}()
 
-	for tables.Scan(&tableName) {
-		logger.Info("\t" + "table: " + tableName)
-		res.Tables[tableName] = tableName
+	tablesValues := map[string]map[string]interface{}{}
+	keyspacesValues := map[string]map[string]interface{}{}
+
+	for {
+		// New map each iteration
+		row := make(map[string]interface{})
+		if !tablesIt.MapScan(row) {
+			break
+		}
+		// Do things with row
+		if tableName, ok := row["table_name"]; ok {
+			tablesValues[fmt.Sprintf("%v", tableName)] = row
+		}
 	}
-	for keyspaces.Scan(&keyspaceName, nil, nil) {
-		logger.Info("\t" + "keyspace: " + keyspaceName)
-		res.Keyspaces[keyspaceName] = keyspaceName
+
+	for {
+		// New map each iteration
+		row := make(map[string]interface{})
+		if !keyspacesIt.MapScan(row) {
+			break
+		}
+		// Do things with row
+		if keyspaceName, ok := row["keyspace_name"]; ok {
+			keyspacesValues[fmt.Sprintf("%v", keyspaceName)] = row
+		}
 	}
+
+	res.Tables = tablesValues
+	res.Keyspaces = keyspacesValues
 
 	return res
 }
