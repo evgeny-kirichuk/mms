@@ -3,11 +3,10 @@
 ### Instructions for setting up a Scylla Cluster from this repo, prerequisites are a running 3 node cluster with the catalog/tracking keyspaces and tables. More info in the Scylla University course [Using Scylla Drivers](https://university.scylladb.com/courses/using-scylla-drivers/).
 
 ```
-cd mms/go/
-docker build -t go-app .
-docker run -d -p 5500:5500 --net=mms_web --name server-app go-app
+docker build -t go-env .
+docker run -d -p 8000:8000 --net=mms_web -v "$PWD:/app" --name server-app go-env
 docker exec -it server-app sh
-./goapp
+air
 ```
 
 ### To manually add the catalog keyspace and data
