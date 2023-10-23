@@ -36,6 +36,17 @@ services:
     networks:
       web:
 
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    volumes:
+      - ./:/app
+    ports:
+    - 8000:8000
+    networks:
+      web:
+
 networks:
   web:
     driver: bridge
