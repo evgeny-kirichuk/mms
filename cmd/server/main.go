@@ -31,14 +31,6 @@ func main() {
 
 	app := fiber.New(config)
 	apiv1 := app.Group("/api/v1")
-	apiv1.Get("/user", func(c *fiber.Ctx) error {
-		return c.JSON(map[string]string{"message": "Hello World!!!"})
-	})
-
-	apiv1.Get("/select", func(c *fiber.Ctx) error {
-		res := scylla.SelectQuery(session, logger)
-		return c.JSON(res)
-	})
 
 	apiv1.Get("/tabless", func(c *fiber.Ctx) error {
 		res := scylla.SelectTables(session, logger)
