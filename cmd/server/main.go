@@ -10,18 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// func goDotEnvVariable(key string) string {
-
-//   // load .env file
-//   err := godotenv.Load(".env")
-
-//   if err != nil {
-//     log.Fatalf("Error loading .env file")
-//   }
-
-//   return os.Getenv(key)
-// }
-
 var config = fiber.Config{
 	ErrorHandler: func(c *fiber.Ctx, err error) error {
 		return c.JSON(map[string]string{"error": err.Error()})
@@ -29,9 +17,6 @@ var config = fiber.Config{
 }
 
 func main() {
-	// port := goDotEnvVariable("PORT")
-	// fmt.Println("port", port)
-
 	addr := flag.String("addr", ":8000", "http service address")
 	flag.Parse()
 
@@ -66,18 +51,4 @@ func main() {
 	})
 
 	app.Listen(*addr)
-}
-
-func insertQuery(session *gocql.Session, logger *zap.Logger) {
-	logger.Info("Inserting Mike")
-	if err := session.Query("INSERT INTO mutant_data (first_name,last_name,address,picture_location) VALUES ('Mike','Tyson','1515 Main St', 'http://www.facebook.com/mtyson')").Exec(); err != nil {
-		logger.Error("insert catalog.mutant_data", zap.Error(err))
-	}
-}
-
-func deleteQuery(session *gocql.Session, logger *zap.Logger) {
-	logger.Info("Deleting Mike")
-	if err := session.Query("DELETE FROM mutant_data WHERE first_name = 'Mike' and last_name = 'Tyson'").Exec(); err != nil {
-		logger.Error("delete catalog.mutant_data", zap.Error(err))
-	}
 }
